@@ -74,22 +74,24 @@ if __name__ == '__main__':
     # print(args)
 
     true_args = [(key, value) for (key, value) in args.items() if value]
-    statics = [(key, value) for (key, value) in true_args if "<" not in key]
+    commands = [key for (key, _) in true_args
+                if not any(char in key for char in "-<")]
 
     parameters = {key[1:-1]: value for (key, value) in true_args if "<" in key}
     options = {key[2:]: value for (key, value) in true_args if "-" in key}
     additionals = {**parameters, **options}
 
-    for key, value in statics:
+    if commands:
         thismodule = sys.modules[__name__]
+        function_name = commands[0]
 
         try:
-            method = getattr(thismodule, key)
-            method(**additionals)
+            task = getattr(thismodule, function_name)
+            task(**additionals)
         except TypeError:
             try:
-                method()
+                task()
             except TypeError:
                 pass
         except AttributeError as error:
-            pass
+            print(f"Function '{function_name}' is not defined.")

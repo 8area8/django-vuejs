@@ -22,6 +22,7 @@ yarn-error.log*
 
 # python
 .mypy_cache
+*.log
 
 # env
 .env
